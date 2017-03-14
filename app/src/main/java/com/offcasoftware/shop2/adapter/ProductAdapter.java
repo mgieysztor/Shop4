@@ -17,8 +17,8 @@ import java.util.List;
  */
 
 public class ProductAdapter extends RecyclerView.Adapter {
-    private int VIEW_TYPE1 = 0;
-    
+//    private int VIEW_TYPE1 = 0;
+
 
     private List<Product> mItems = new ArrayList<>();
 
@@ -34,14 +34,15 @@ public class ProductAdapter extends RecyclerView.Adapter {
         return new ProductHolder(view);
     }
 
-    @Override
-    public int getItemViewType(int position) {
-        return super.getItemViewType(position);
-    }
+//    @Override
+//    public int getItemViewType(int position) {
+//        return super.getItemViewType(position);
+//    }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-
+        final Product product = getItem(position);
+        ((ProductHolder)holder).bind(product);
     }
 
     @Override
@@ -49,9 +50,16 @@ public class ProductAdapter extends RecyclerView.Adapter {
         return mItems.size();
     }
 
+    public Product getItem(int position) {
+        return mItems.get(position);
+    }
+
     public static class ProductHolder extends RecyclerView.ViewHolder {
         public ProductHolder(View itemView) {
             super(itemView);
+        }
+        public void bind (Product product){
+            ((ProductCardView)itemView).bindTo(product,null);
         }
     }
 
