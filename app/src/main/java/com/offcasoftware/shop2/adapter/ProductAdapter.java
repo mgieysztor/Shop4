@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 
 import com.offcasoftware.shop2.model.Product;
 import com.offcasoftware.shop2.view.widget.ProductCardView;
+import com.offcasoftware.shop2.view.widget.ProductListFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,14 +17,16 @@ import java.util.List;
  * Created by RENT on 2017-03-14.
  */
 
-public class ProductAdapter extends RecyclerView.Adapter {
+public class ProductAdapter extends RecyclerView.Adapter implements ProductCardView.ProductCardViewInterface {
 //    private int VIEW_TYPE1 = 0;
-
 
     private List<Product> mItems = new ArrayList<>();
 
-    public ProductAdapter(List<Product> products) {
+    private ProductCardView.ProductCardViewInterface mListener;
+
+    public ProductAdapter(List<Product> products, ProductCardView.ProductCardViewInterface listener) {
         mItems.addAll(products);
+        mListener = listener;
     }
 
     @Override
@@ -42,7 +45,7 @@ public class ProductAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         final Product product = getItem(position);
-        ((ProductHolder)holder).bind(product);
+        ((ProductHolder) holder).bind(product);
     }
 
     @Override
@@ -54,12 +57,21 @@ public class ProductAdapter extends RecyclerView.Adapter {
         return mItems.get(position);
     }
 
-    public static class ProductHolder extends RecyclerView.ViewHolder {
+    @Override
+    public void onProductClicked(Product product) {
+        if (mListener !=null){
+            mListener.onProductClicked(product);
+        }
+
+    }
+
+    public class ProductHolder extends RecyclerView.ViewHolder {
         public ProductHolder(View itemView) {
             super(itemView);
         }
-        public void bind (Product product){
-            ((ProductCardView)itemView).bindTo(product,null);
+
+        public void bind(Product product) {
+            ((ProductCardView) itemView).bindTo(product, ProductAdapter.this);
         }
     }
 

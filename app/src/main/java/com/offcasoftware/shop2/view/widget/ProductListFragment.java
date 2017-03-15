@@ -6,7 +6,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +18,7 @@ import butterknife.BindDimen;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.offcasoftware.shop2.R;
+import com.offcasoftware.shop2.adapter.ProductAdapter;
 import com.offcasoftware.shop2.model.Product;
 import com.offcasoftware.shop2.repository.ProductRepository;
 import com.offcasoftware.shop2.repository.ProductRepositoryInterface;
@@ -28,23 +32,17 @@ import java.util.List;
 
 public class ProductListFragment extends Fragment implements ProductCardView.ProductCardViewInterface {
 
-    @BindDimen(R.dimen.product_list_item_height)
-    int mProductListItemHeight;
-
-    @BindView(R.id.line1)
-    LinearLayout mContainer;
-
     @BindView(R.id.product_recycler)
     RecyclerView mRecyclerView;
 
-    private ProductRepositoryInterface mProductRepository
-            = ProductRepository.getInstance();
-
     public interface OnProductSelected{
+
         void onProductSelected(Product product);
     }
-
     private OnProductSelected mListener;
+
+    private ProductRepositoryInterface mProductRepository
+            = ProductRepository.getInstance();
 
     @Nullable
     @Override
@@ -73,17 +71,10 @@ public class ProductListFragment extends Fragment implements ProductCardView.Pro
     private void displayData() {
         List<Product> products = mProductRepository.getProducts();
 
-        for (Product product : products) {
-
-            LinearLayout.LayoutParams layoutParams =
-                    new LinearLayout.LayoutParams(
-                            ViewGroup.LayoutParams.MATCH_PARENT,
-                            mProductListItemHeight);
-            ProductCardView productCardView = new ProductCardView(getActivity());
-            productCardView.setLayoutParams(layoutParams);
-            productCardView.bindTo(product, this);
-            mContainer.addView(productCardView);
-        }
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+//        mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(),2));
+//        mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL));
+        mRecyclerView.setAdapter(new ProductAdapter(products, this));
     }
 
     @Override

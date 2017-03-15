@@ -8,9 +8,12 @@ import android.support.v7.widget.CardView;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import butterknife.BindDimen;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -34,24 +37,31 @@ public class ProductCardView extends CardView {
     @BindView(R.id.product_price)
     TextView mProductPrice;
 
+    @BindDimen(R.dimen.product_list_item_height)
+    int mProductListItemHeight;
+
     public ProductCardView(final Context context) {
-        super(context);
-        init();
+        this(context, null);
+
+//        LinearLayout.LayoutParams layoutParams =
+//                new LinearLayout.LayoutParams(
+//                        ViewGroup.LayoutParams.MATCH_PARENT,
+//                        mProductListItemHeight);
+//        setLayoutParams(layoutParams);
     }
 
     public ProductCardView(final Context context, final AttributeSet attrs) {
-        super(context, attrs);
-        init();
+        this(context, attrs, 0);
     }
 
     public ProductCardView(final Context context, final AttributeSet attrs,
-            final int defStyleAttr) {
+                           final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }
 
     public void bindTo(final Product product,
-            final ProductCardViewInterface productCardViewInterface) {
+                       final ProductCardViewInterface productCardViewInterface) {
         mProductName.setText(product.getName());
         mProductPrice.setText(String.valueOf(product.getPrice()));
         if (!TextUtils.isEmpty(product.getImageResId())) {
