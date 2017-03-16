@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 
 import com.offcasoftware.shop2.model.Product;
 import com.offcasoftware.shop2.view.widget.ProductCardView;
-import com.offcasoftware.shop2.view.widget.ProductListFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,10 +23,16 @@ public class ProductAdapter extends RecyclerView.Adapter implements ProductCardV
 
     private ProductCardView.ProductCardViewInterface mListener;
 
+    public ProductAdapter(ProductCardView.ProductCardViewInterface mListener) {
+        this.mListener = mListener;
+    }
+
     public ProductAdapter(List<Product> products, ProductCardView.ProductCardViewInterface listener) {
         mItems.addAll(products);
         mListener = listener;
     }
+
+
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -81,5 +86,10 @@ public class ProductAdapter extends RecyclerView.Adapter implements ProductCardV
             mItems.addAll(products);
             notifyDataSetChanged();
         }
+    }
+
+    public void clear (){
+        mItems.clear();
+        notifyDataSetChanged();
     }
 }

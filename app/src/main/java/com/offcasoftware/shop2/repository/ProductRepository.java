@@ -23,6 +23,10 @@ public class ProductRepository implements ProductRepositoryInterface {
         mDatabase = AndroidApplication.getDatabase();
 
         List<Product> products = new ArrayList<>();
+//        for (int i = 0; i <= 15; i++) {
+//            Product product = new Product(i, "dom " + String.valueOf(i),i *10000, "dom"+String.valueOf(i%3+1));
+//            products.add(product);
+//        }
 
         Product product1 = new Product(1, "dom 1", 1000, "dom1");
         Product product2 = new Product(2, "dom 2", 2000, "dom2");

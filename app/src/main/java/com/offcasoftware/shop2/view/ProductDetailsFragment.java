@@ -3,6 +3,8 @@ package com.offcasoftware.shop2.view;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,6 +17,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import com.offcasoftware.shop2.R;
+import com.offcasoftware.shop2.loaders.GetProductDetails;
 import com.offcasoftware.shop2.model.Product;
 import com.offcasoftware.shop2.repository.ProductRepository;
 import com.offcasoftware.shop2.repository.ProductRepositoryInterface;
@@ -25,7 +28,7 @@ import java.util.List;
  * Created by krzysztofjanik on 13.03.2017.
  */
 
-public class ProductDetailsFragment extends Fragment {
+public class ProductDetailsFragment extends Fragment implements LoaderManager.LoaderCallbacks<Product> {
 
     public static final String INTENT_PRODUCT_ID =
             ProductDetailsActivity.class.getSimpleName() + "productId";
@@ -68,24 +71,30 @@ public class ProductDetailsFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        Bundle bundle = getArguments();
-        if (bundle == null) {
-            List<Product> productList = mProductRepository.getProducts();
-            if (!productList.isEmpty()) {
-                displayData(productList.get(0));
-            }
-            return;
-//            throw new IllegalArgumentException();
-        }
-        int productId = bundle.getInt(INTENT_PRODUCT_ID, Product.UNDEFINED);
-        Log.d("Shop", "Product id: " + productId);
-        if (productId != Product.UNDEFINED) {
-            Product product = mProductRepository.getProduct(productId);
-            displayData(product);
-        }
+//        Bundle bundle = getArguments();
+//        if (bundle == null) {
+//            List<Product> productList = mProductRepository.getProducts();
+//            if (!productList.isEmpty()) {
+//                displayData(productList.get(0));
+//            }
+//            return;
+////            throw new IllegalArgumentException();
+//        }
+//        int productId = bundle.getInt(INTENT_PRODUCT_ID, Product.UNDEFINED);
+//        Log.d("Shop", "Product id: " + productId);
+//        if (productId != Product.UNDEFINED) {
+//            Product product = mProductRepository.getProduct(productId);
+//            displayData(product);
+    }
 //        Product product = mProductRepository.getProduct(productId);
 //
 //        displayData(product);
+
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        getLoaderManager().initLoader(2, getArguments(), this);
     }
 
     public void updateProduct(Product product) {
@@ -101,4 +110,22 @@ public class ProductDetailsFragment extends Fragment {
         mProductPrice.setText(String.valueOf(product.getPrice()));
     }
 
+    @Override
+    public Loader<Product> onCreateLoader(int id, Bundle bundle) {
+//        int productId = (bundle == null || !bundle.containsKey(INTENT_PRODUCT_ID))
+//                ? Product.UNDEFINED : bundle.getInt(INTENT_PRODUCT_ID);
+        int productId = bundle != null ? bundle.getInt(INTENT_PRODUCT_ID, Product.UNDEFINED) : Product.UNDEFINED;
+
+        return new GetProductDetails(getActivity(), productId);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Product> loader, Product data) {
+        displayData(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader loader) {
+
+    }
 }
