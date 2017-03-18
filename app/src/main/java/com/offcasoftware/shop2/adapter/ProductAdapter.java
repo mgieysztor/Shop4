@@ -16,18 +16,20 @@ import java.util.List;
  * Created by RENT on 2017-03-14.
  */
 
-public class ProductAdapter extends RecyclerView.Adapter implements ProductCardView.ProductCardViewInterface {
+public class ProductAdapter extends BaseAdapter<Product> implements ProductCardView.ProductCardViewInterface {
 //    private int VIEW_TYPE1 = 0;
 
     private List<Product> mItems = new ArrayList<>();
 
     private ProductCardView.ProductCardViewInterface mListener;
 
-    public ProductAdapter(ProductCardView.ProductCardViewInterface mListener) {
+    public ProductAdapter(Context context, ProductCardView.ProductCardViewInterface mListener) {
+        super   (context);
         this.mListener = mListener;
     }
 
-    public ProductAdapter(List<Product> products, ProductCardView.ProductCardViewInterface listener) {
+    public ProductAdapter(Context context, List<Product> products, ProductCardView.ProductCardViewInterface listener) {
+        super(context,products);
         mItems.addAll(products);
         mListener = listener;
     }
@@ -51,6 +53,11 @@ public class ProductAdapter extends RecyclerView.Adapter implements ProductCardV
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         final Product product = getItem(position);
         ((ProductHolder) holder).bind(product);
+    }
+
+    @Override
+    public void onBind(RecyclerView.ViewHolder holder, Product product, int position) {
+        ((ProductHolder)holder).bind(product);
     }
 
     @Override

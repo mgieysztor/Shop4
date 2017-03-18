@@ -20,6 +20,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -42,10 +44,6 @@ public class MainActivity extends AppCompatActivity implements ProductListFragme
     @BindView(R.id.bottom_navigation)
     BottomNavigationView mBottomNavigationView;
 
-    private ProductListFragment mProductListFragment;
-    private ProductDetailsFragment mProductDetailsFragment;
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,10 +54,6 @@ public class MainActivity extends AppCompatActivity implements ProductListFragme
         setupActionBarDrawerToggle();
         setupNavigationView();
         setupBottomNavigationView();
-
-        mProductListFragment = (ProductListFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_product_list);
-        mProductDetailsFragment = (ProductDetailsFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_product_details);
-
 
     }
 
@@ -159,20 +153,36 @@ public class MainActivity extends AppCompatActivity implements ProductListFragme
                 startActivity(new Intent(this, Test.class));
                 break;
             case R.id.action3:
-                startActivity(new Intent(this, ProductPagerActivity.class));
+                startActivity(new Intent(this, ContactsActivity.class));
                 // Toast.makeText(MainActivity.this, "Action3", Toast.LENGTH_SHORT).show();
                 break;
         }
     }
 
     @Override
+    public void onProductsReady(List<Product> products) {
+        if (getmProductDetailsFragment() !=null && !products.isEmpty()) {
+            getmProductDetailsFragment().updateProduct(products.get(0));
+        }
+    }
+
+    @Override
     public void onProductSelected(Product product) {
-        if (mProductDetailsFragment != null) { //tu aplikacja jest w trybie landscape
-            mProductDetailsFragment.updateProduct(product);
+        if (getmProductDetailsFragment() != null) { //tu aplikacja jest w trybie landscape
+            getmProductDetailsFragment().updateProduct(product);
         } else { //tu aplikacja jest w trybie portrait
             Intent intent = new Intent(this, ProductDetailsActivity.class);
             intent.putExtra(ProductDetailsActivity.INTENT_PRODUCT_ID, product.getId());
             startActivity(intent);
         }
+    }
+
+    ProductDetailsFragment getmProductDetailsFragment() {
+        final ProductDetailsFragment fragment = (ProductDetailsFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.fragment_product_details);
+        if (fragment!=null && !fragment.isAdded()){
+            return null;
+        }
+        return fragment;
     }
 }

@@ -39,6 +39,9 @@ public class ProductListFragment extends Fragment
 
     @Override
     public void onLoadFinished(Loader<List<Product>> loader, List<Product> data) {
+        if (mListener != null){
+            mListener.onProductsReady(data);
+        }
         mAdapter.swapData(data);
     }
 
@@ -48,7 +51,7 @@ public class ProductListFragment extends Fragment
     }
 
     public interface OnProductSelected {
-
+        void onProductsReady (List<Product>products);
         void onProductSelected(Product product);
     }
 
@@ -73,7 +76,7 @@ public class ProductListFragment extends Fragment
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mAdapter = new ProductAdapter(this);
+        mAdapter = new ProductAdapter(getActivity(),this);
         mRecyclerView.setAdapter(mAdapter);
         getLoaderManager().initLoader(1, null, this);
     }
