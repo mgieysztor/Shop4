@@ -1,23 +1,30 @@
 package com.offcasoftware.shop2.view.widget;
 
 import android.app.Activity;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
 import com.offcasoftware.shop2.R;
 import com.offcasoftware.shop2.adapter.ProductAdapter;
 import com.offcasoftware.shop2.loaders.GetAllProducts;
 import com.offcasoftware.shop2.model.Product;
+import com.offcasoftware.shop2.provider.ProductProvider;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -25,7 +32,7 @@ import java.util.List;
  */
 
 public class ProductListFragment extends Fragment
-        implements ProductCardView.ProductCardViewInterface, LoaderManager.LoaderCallbacks<List<Product>> {
+        implements ProductCardView.ProductCardViewInterface, LoaderManager.LoaderCallbacks<Cursor> {
 
     @BindView(R.id.product_recycler)
     RecyclerView mRecyclerView;
@@ -33,25 +40,28 @@ public class ProductListFragment extends Fragment
     ProductAdapter mAdapter;
 
     @Override
-    public Loader<List<Product>> onCreateLoader(int id, Bundle args) {
-        return new GetAllProducts(getActivity());
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+//        return new GetAllProducts(getActivity());
+        return new CursorLoader(getActivity(), ProductProvider.CONTENT_URI, null, null, null, null);
     }
 
     @Override
-    public void onLoadFinished(Loader<List<Product>> loader, List<Product> data) {
-        if (mListener != null){
-            mListener.onProductsReady(data);
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        final List<Product> products = getProducts(cursor);
+        if (mListener != null) {
+            mListener.onProductsReady(products);
         }
-        mAdapter.swapData(data);
+        mAdapter.swapData(products);
     }
 
     @Override
-    public void onLoaderReset(Loader<List<Product>> loader) {
+    public void onLoaderReset(Loader<Cursor> loader) {
         mAdapter.clear();
     }
 
     public interface OnProductSelected {
-        void onProductsReady (List<Product>products);
+        void onProductsReady(List<Product> products);
+
         void onProductSelected(Product product);
     }
 
@@ -76,7 +86,7 @@ public class ProductListFragment extends Fragment
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mAdapter = new ProductAdapter(getActivity(),this);
+        mAdapter = new ProductAdapter(getActivity(), this);
         mRecyclerView.setAdapter(mAdapter);
         getLoaderManager().initLoader(1, null, this);
     }
@@ -90,11 +100,27 @@ public class ProductListFragment extends Fragment
     }
 
 
-
     @Override
     public void onProductClicked(Product product) {
         if (mListener != null) {
             mListener.onProductSelected(product);
         }
+    }
+
+    private List<Product> getProducts(Cursor cursor) {
+        if (cursor == null) {
+            return Collections.emptyList();
+        }
+        final List<Product> products = new ArrayList<>();
+        cursor.moveToFirst();
+        do {
+            final Product product = new Product(cursor);
+            products.add(product);
+
+
+        } while (cursor.moveToNext());
+        cursor.close();
+        return products;
+
     }
 }

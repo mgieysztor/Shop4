@@ -1,9 +1,12 @@
 package com.offcasoftware.shop2.view;
 
+import android.content.ContentUris;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -19,6 +22,7 @@ import butterknife.ButterKnife;
 import com.offcasoftware.shop2.R;
 import com.offcasoftware.shop2.loaders.GetProductDetails;
 import com.offcasoftware.shop2.model.Product;
+import com.offcasoftware.shop2.provider.ProductProvider;
 import com.offcasoftware.shop2.repository.ProductRepository;
 import com.offcasoftware.shop2.repository.ProductRepositoryInterface;
 
@@ -101,6 +105,13 @@ public class ProductDetailsFragment extends Fragment implements LoaderManager.Lo
         displayData(product);
     }
 
+    private void displayData (final Cursor cursor){
+        if (cursor == null) {
+            return;
+        }
+
+    }
+
     private void displayData(final Product product) {
         if (product == null) {
             return;
@@ -114,16 +125,18 @@ public class ProductDetailsFragment extends Fragment implements LoaderManager.Lo
     }
 
     @Override
-    public Loader<Product> onCreateLoader(int id, Bundle bundle) {
+    public Loader onCreateLoader(int id, Bundle bundle) {
 //        int productId = (bundle == null || !bundle.containsKey(INTENT_PRODUCT_ID))
 //                ? Product.UNDEFINED : bundle.getInt(INTENT_PRODUCT_ID);
         int productId = bundle != null ? bundle.getInt(INTENT_PRODUCT_ID, Product.UNDEFINED) : Product.UNDEFINED;
+        return new CursorLoader(getActivity(), ContentUris.withAppendedId(ProductProvider
+                .CONTENT_URI, productId), null, null, null, null);
 
-        return new GetProductDetails(getActivity(), productId);
+//        return new GetProductDetails(getActivity(), productId);
     }
 
     @Override
-    public void onLoadFinished(Loader<Product> loader, Product data) {
+    public void onLoadFinished(Loader loader, Cursor cursor) {
         displayData(data);
     }
 

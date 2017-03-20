@@ -12,6 +12,10 @@ public class Contact {
 
     private final int mId;
     private final String mName;
+    private final static String COLUMN_NAME = Build.VERSION.SDK_INT
+            >= Build.VERSION_CODES.HONEYCOMB ?
+            ContactsContract.Contacts.DISPLAY_NAME_PRIMARY :
+            ContactsContract.Contacts.DISPLAY_NAME;
 
     public Contact(int id, String name){
         mId = id;
@@ -20,13 +24,8 @@ public class Contact {
     }
 
     public Contact (Cursor cursor){
-        String columnName = Build.VERSION.SDK_INT
-                >= Build.VERSION_CODES.HONEYCOMB ?
-                ContactsContract.Contacts.DISPLAY_NAME_PRIMARY :
-                ContactsContract.Contacts.DISPLAY_NAME;
-
         mId = cursor.getInt(cursor.getColumnIndex("_id"));
-        mName = cursor.getString(cursor.getColumnIndex(columnName));
+        mName = cursor.getString(cursor.getColumnIndex(COLUMN_NAME));
     }
 
     public int getmId() {

@@ -3,18 +3,17 @@ package com.offcasoftware.shop2.view;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.os.Build;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.LoaderManager;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.offcasoftware.shop2.R;
@@ -27,11 +26,14 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class ContactsActivity extends AppCompatActivity {
+public class ContactsActivity extends AppCompatActivity implements
+        LoaderManager.LoaderCallbacks<Cursor> {
     @BindView(R.id.contact_recycler_view)
     RecyclerView mContactRecyclerView;
 
     private static final int READ_CONTACTS_REQUEST = 1;
+
+    private static final int CONTACT_LOADER = 1;
 
     private ContactAdapter mAdapter;
 
@@ -53,7 +55,6 @@ public class ContactsActivity extends AppCompatActivity {
         } else {
             loadContacts();
         }
-
     }
 
     @Override
@@ -72,8 +73,12 @@ public class ContactsActivity extends AppCompatActivity {
     }
 
     private void loadContacts() {
-        Cursor cursor = getContentResolver().query(ContactsContract.Contacts
-                .CONTENT_URI, null, null, null, null);
+        getSupportLoaderManager().initLoader(CONTACT_LOADER, null, this);
+    }
+
+
+    private void displayContacts(Cursor cursor) {
+
         if (cursor == null) {
             return;
 //            mContactCounterTextView.setText(String.valueOf(cursor.getCount()));
@@ -89,7 +94,22 @@ public class ContactsActivity extends AppCompatActivity {
 
         mAdapter.swapData(items);
         cursor.close();
+    }
+
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return  new CursorLoader(this, ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
 
     }
 
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        displayContacts(cursor);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        mAdapter.clearData();
+    }
 }

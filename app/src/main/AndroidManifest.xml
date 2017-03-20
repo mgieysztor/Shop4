@@ -36,6 +36,10 @@
         <activity android:name=".view.widget.FagmentCommunicationActivity" />
         <activity android:name=".view.ProductPagerActivity" />
         <activity android:name=".view.ContactsActivity"></activity>
+
+        <provider
+            android:authorities="com.offcasoftware.shop2.provider"
+            android:name=".provider.ProductProvider"/>
     </application>
 
 </manifest>
